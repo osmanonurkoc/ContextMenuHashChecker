@@ -58,7 +58,7 @@ A modern, lightweight, native Windows Forms utility that integrates directly int
 
 ## 📄 License
 
-This project is licensed under the [MIT License](https://www.google.com/search?q=LICENSE).
+This project is licensed under the [MIT License](LICENSE).
 
 ----------
 
