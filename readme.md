@@ -18,7 +18,7 @@ A modern, lightweight, native Windows Forms utility that integrates directly int
   <img src="images/setup.png" width="45%" alt="Setup and Installer" />
   <img src="images/compare.png" width="45%" alt="Hash Calculation and Verification" />
   <br/><br/>
-  <img src="images/context_menu.png" width="50%" alt="Context Menu Integration" />
+  <img src="images/context_menu.png" width="70%" alt="Context Menu Integration" />
 </p>
 
 ---
