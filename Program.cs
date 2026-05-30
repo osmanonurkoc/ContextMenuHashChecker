@@ -11,15 +11,23 @@ namespace HashChecker
 {
     public class SetupForm : Form
     {
+        private readonly string installDir;
+        private readonly string installExePath;
+
         public SetupForm()
         {
+            // Define installation paths in %LOCALAPPDATA%
+            string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            installDir = Path.Combine(appData, "ContextMenuHashChecker");
+            installExePath = Path.Combine(installDir, Path.GetFileName(Application.ExecutablePath));
+
             this.Text = "Context Menu Hash Checker - Setup";
             this.Size = new Size(420, 240);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            // --- TIKLANABİLİR HEADER ALANI ---
+            // --- CLICKABLE HEADER AREA ---
             EventHandler openUrl = (s, e) => Process.Start(new ProcessStartInfo("https://www.osmanonurkoc.com") { UseShellExecute = true });
 
             try
@@ -60,7 +68,7 @@ namespace HashChecker
             };
             lblSubtitle.Click += openUrl;
 
-            // --- İÇERİK ALANI ---
+            // --- CONTENT AREA ---
             Label lblDesc = new Label()
             {
                 Text = "This tool adds hash verification options to the right-click menu.\nYou can use the buttons below for installation.",
@@ -97,14 +105,26 @@ namespace HashChecker
         {
             try
             {
-                string exePath = Application.ExecutablePath;
+                // 1. Copy the executable to the Local AppData directory
+                if (!Directory.Exists(installDir))
+                {
+                    Directory.CreateDirectory(installDir);
+                }
+
+                // Only copy if we are not already running from the destination folder
+                if (!Application.ExecutablePath.Equals(installExePath, StringComparison.OrdinalIgnoreCase))
+                {
+                    File.Copy(Application.ExecutablePath, installExePath, true);
+                }
+
+                // 2. Write to Registry using the new installed path
                 string basePath = @"Software\Classes\*\shell\Checksum";
 
                 using (RegistryKey key = Registry.CurrentUser.CreateSubKey(basePath))
                 {
                     key.SetValue("MUIVerb", "Checksum");
                     key.SetValue("SubCommands", "");
-                    key.SetValue("Icon", $"\"{exePath}\",0");
+                    key.SetValue("Icon", $"\"{installExePath}\",0");
                 }
 
                 string[] algos = { "MD5", "SHA1", "SHA256", "SHA384", "SHA512" };
@@ -116,15 +136,15 @@ namespace HashChecker
                         subKey.SetValue("MUIVerb", algo);
                         using (RegistryKey cmdKey = subKey.CreateSubKey("command"))
                         {
-                            cmdKey.SetValue("", $"\"{exePath}\" \"%1\" {algo.ToLower()}");
+                            cmdKey.SetValue("", $"\"{installExePath}\" \"%1\" {algo.ToLower()}");
                         }
                     }
                 }
-                MessageBox.Show("Successfully added to the context menu!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Successfully installed to the context menu!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred:\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("An error occurred during installation:\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -132,12 +152,67 @@ namespace HashChecker
         {
             try
             {
+                // 1. Remove Registry Keys
                 Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\*\shell\Checksum", false);
-                MessageBox.Show("Successfully removed from the context menu.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // 2. Handle File Deletion
+                bool isRunningFromInstallDir = Application.ExecutablePath.Equals(installExePath, StringComparison.OrdinalIgnoreCase);
+
+                if (isRunningFromInstallDir)
+                {
+                    // If running from the installed directory, we cannot delete the exe directly.
+                    // We trigger a self-deleting batch script and exit.
+                    MessageBox.Show("Successfully removed from the context menu.\nThe application will now close and clean up its files.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DeleteSelfAndExit();
+                }
+                else
+                {
+                    // If running from somewhere else (e.g., Downloads), delete the installed directory safely.
+                    if (Directory.Exists(installDir))
+                    {
+                        Directory.Delete(installDir, true);
+                    }
+                    MessageBox.Show("Successfully removed from the context menu and cleaned up installation files.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred:\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("An error occurred during removal:\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void DeleteSelfAndExit()
+        {
+            try
+            {
+                string batchPath = Path.Combine(Path.GetTempPath(), "uninstall_hashchecker.bat");
+                string exePath = Application.ExecutablePath;
+                string dirPath = Path.GetDirectoryName(exePath);
+
+                // Batch script: wait 2 seconds for the app to close, delete the exe, delete the folder, then delete the batch script itself.
+                string batchContent = $@"
+                @echo off
+                ping 127.0.0.1 -n 2 > nul
+                del /f /q ""{exePath}""
+                cd ..
+                rd /s /q ""{dirPath}""
+                del ""%~f0""
+                ";
+                File.WriteAllText(batchPath, batchContent);
+
+                ProcessStartInfo psi = new ProcessStartInfo()
+                {
+                    FileName = batchPath,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = false
+                };
+                Process.Start(psi);
+            }
+            catch { /* Silently fail if self-deletion script fails to execute */ }
+            finally
+            {
+                Application.Exit();
             }
         }
     }
@@ -172,7 +247,7 @@ namespace HashChecker
             txtCalculated = new TextBox() { Text = "Calculating...", Location = new Point(15, 40), Width = 370, ReadOnly = true };
 
             btnCopy = new Button() { Text = "Copy", Location = new Point(395, 38), Width = 75, Enabled = false };
-            btnCopy.Click += (s, e) => { if(!string.IsNullOrEmpty(calculatedHash)) Clipboard.SetText(calculatedHash); };
+            btnCopy.Click += (s, e) => { if (!string.IsNullOrEmpty(calculatedHash)) Clipboard.SetText(calculatedHash); };
 
             progressBar = new ProgressBar() { Location = new Point(15, 75), Width = 455, Height = 20, Style = ProgressBarStyle.Marquee };
 
