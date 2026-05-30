@@ -54,7 +54,11 @@ A modern, lightweight, native Windows Forms utility that integrates directly int
 3.  Click the algorithm you wish to calculate (e.g., SHA256).
     
 4.  Paste your target hash into the lower text box. The program will instantly compare the values and notify you with a "Match" or "Mismatch" status.
-    
+
+#### 🗑️ How to Uninstall
+1. Open the `HashChecker.exe` from anywhere on your system (either your original download or the installed version from "%LOCALAPPDATA%\ContextMenuHashChecker").
+2. Click the **"Remove from Context Menu"** button.
+3. The application will automatically remove all registry keys and securely delete its own installation folder and files from your system. No manual cleanup is required!
 
 ## 📄 License
 
