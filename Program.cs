@@ -127,7 +127,7 @@ namespace HashChecker
                     key.SetValue("Icon", $"\"{installExePath}\",0");
                 }
 
-                string[] algos = { "MD5", "SHA1", "SHA256", "SHA384", "SHA512" };
+                string[] algos = { "MD5", "SHA1", "SHA256", "SHA384", "SHA512", "SHA3-256", "SHA3-512" };
                 for (int i = 0; i < algos.Length; i++)
                 {
                     string algo = algos[i];
@@ -335,6 +335,8 @@ namespace HashChecker
                 case "SHA256": hashAlgo = SHA256.Create(); break;
                 case "SHA384": hashAlgo = SHA384.Create(); break;
                 case "SHA512": hashAlgo = SHA512.Create(); break;
+                case "SHA3-256": hashAlgo = SHA3_256.Create(); break;
+                case "SHA3-512": hashAlgo = SHA3_512.Create(); break;
                 default: throw new Exception("Unsupported Algorithm");
             }
 
