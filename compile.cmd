@@ -18,7 +18,8 @@ dotnet publish -c Release -r win-x64 ^
     -p:Description="Calculates and compares MD5 SHA1 SHA256 SHA384 SHA512 hashes from context menu" ^
     -p:Copyright="www.osmanonurkoc.com" ^
     --self-contained true ^
-    -p:PublishSingleFile=true
+    -p:PublishSingleFile=true ^
+    -p:IncludeNativeLibrariesForSelfExtract=true
 
 echo.
 echo Program compiled successfully!

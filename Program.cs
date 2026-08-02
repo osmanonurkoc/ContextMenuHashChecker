@@ -32,12 +32,12 @@ namespace HashChecker
 
             try
             {
-                Icon appIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                Icon? appIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
                 this.Icon = appIcon;
 
                 PictureBox pbIcon = new PictureBox()
                 {
-                    Image = appIcon.ToBitmap(),
+                    Image = appIcon?.ToBitmap(),
                     Location = new Point(20, 15),
                     Size = new Size(48, 48),
                     SizeMode = PictureBoxSizeMode.Zoom,
@@ -101,7 +101,7 @@ namespace HashChecker
             this.Controls.Add(btnUninstall);
         }
 
-        private void BtnInstall_Click(object sender, EventArgs e)
+        private void BtnInstall_Click(object? sender, EventArgs e)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace HashChecker
             }
         }
 
-        private void BtnUninstall_Click(object sender, EventArgs e)
+        private void BtnUninstall_Click(object? sender, EventArgs e)
         {
             try
             {
@@ -187,7 +187,7 @@ namespace HashChecker
             {
                 string batchPath = Path.Combine(Path.GetTempPath(), "uninstall_hashchecker.bat");
                 string exePath = Application.ExecutablePath;
-                string dirPath = Path.GetDirectoryName(exePath);
+                string? dirPath = Path.GetDirectoryName(exePath);
 
                 // Batch script: wait 2 seconds for the app to close, delete the exe, delete the folder, then delete the batch script itself.
                 string batchContent = $@"
@@ -271,7 +271,7 @@ namespace HashChecker
             this.Controls.Add(btnOk);
         }
 
-        private async void HashForm_Load(object sender, EventArgs e)
+        private async void HashForm_Load(object? sender, EventArgs e)
         {
             try
             {
@@ -301,7 +301,7 @@ namespace HashChecker
             }
         }
 
-        private void TxtCompare_TextChanged(object sender, EventArgs e)
+        private void TxtCompare_TextChanged(object? sender, EventArgs? e)
         {
             if (string.IsNullOrEmpty(calculatedHash)) return;
 
@@ -327,7 +327,7 @@ namespace HashChecker
 
         private string CalculateHashOptimized(string filename, string algo)
         {
-            HashAlgorithm hashAlgo = null;
+            HashAlgorithm? hashAlgo = null;
             switch (algo)
             {
                 case "MD5": hashAlgo = MD5.Create(); break;
