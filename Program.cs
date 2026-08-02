@@ -127,7 +127,7 @@ namespace HashChecker
                     key.SetValue("Icon", $"\"{installExePath}\",0");
                 }
 
-                string[] algos = { "MD5", "SHA1", "SHA256", "SHA384", "SHA512", "SHA3-256", "SHA3-512" };
+                string[] algos = { "MD5", "SHA1", "SHA256", "SHA384", "SHA512", "SHA3-256", "SHA3-512", "CRC32" };
                 for (int i = 0; i < algos.Length; i++)
                 {
                     string algo = algos[i];
@@ -327,6 +327,23 @@ namespace HashChecker
 
         private string CalculateHashOptimized(string filename, string algo)
         {
+            int bufferSize = 1024 * 1024;
+
+            // Handle CRC32 separately using System.IO.Hashing
+            if (algo == "CRC32")
+            {
+                using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, FileOptions.SequentialScan))
+                {
+                    var crc32 = new System.IO.Hashing.Crc32();
+                    crc32.Append(stream);
+                    byte[] hashBytes = crc32.GetCurrentHash();
+
+                    Array.Reverse(hashBytes);
+
+                    return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                }
+            }
+
             HashAlgorithm? hashAlgo = null;
             switch (algo)
             {
@@ -340,7 +357,6 @@ namespace HashChecker
                 default: throw new Exception("Unsupported Algorithm");
             }
 
-            int bufferSize = 1024 * 1024;
             using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, FileOptions.SequentialScan))
             {
                 byte[] hash = hashAlgo.ComputeHash(stream);
