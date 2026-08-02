@@ -9,9 +9,9 @@ if exist obj rd /s /q obj
 
 echo Compiling process starting...
 dotnet publish -c Release -r win-x64 ^
-    -p:Version=1.1.0.0 ^
-    -p:FileVersion=1.1.0.0 ^
-    -p:AssemblyVersion=1.1.0.0 ^
+    -p:Version=1.2.0.0 ^
+    -p:FileVersion=1.2.0.0 ^
+    -p:AssemblyVersion=1.2.0.0 ^
     -p:Company="Osman Onur Koc" ^
     -p:Product="Context Menu Hash Checker" ^
     -p:AssemblyTitle="Windows Context Menu Hash Checker" ^
