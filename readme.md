@@ -5,7 +5,7 @@
 ![Downloads](https://img.shields.io/github/downloads/osmanonurkoc/ContextMenuHashChecker/total)
 ![Language](https://img.shields.io/badge/language-C%23-blue)
 
-A modern, lightweight, native Windows Forms utility that integrates directly into the Windows right-click context menu. This tool allows you to instantly calculate and verify file checksums (MD5, SHA1, SHA256, SHA384, SHA512) with a clean UI that automatically adapts to your system's Light or Dark theme.
+A modern, lightweight, native Windows Forms utility that integrates directly into the Windows right-click context menu. This tool allows you to instantly calculate and verify file checksums (MD5, SHA1, SHA256, SHA384, SHA512, SHA3-256, SHA3-512, CRC32) with a clean UI that automatically adapts to your system's Light or Dark theme.
 
 ---
 ### 📥 Download Latest
@@ -26,7 +26,7 @@ A modern, lightweight, native Windows Forms utility that integrates directly int
 ## 🔥 Features
 
 * **Instant Context Menu Integration:** Calculate hashes for any file directly from the Windows right-click menu.
-* **All Major Algorithms:** Full support for MD5, SHA1, SHA256, SHA384, and SHA512 checksums.
+* **All Major Algorithms:** Full support for MD5, SHA1, SHA256, SHA384, SHA512, SHA3-256, SHA3-512, and CRC32 checksums.
 * **Self-Installing & Portable:** Acts as its own setup launcher. Simply double-click the `.exe` to cleanly add or remove registry keys without needing a separate installer.
 * **Dynamic Theme Support:** Automatically reads the Windows Registry to adapt its UI colors to your system's Light or Dark mode.
 * **Large File Optimization:** Uses a 1MB buffer limit and `SequentialScan` to provide blazing-fast disk read speeds, even for massive video files or disk images.
